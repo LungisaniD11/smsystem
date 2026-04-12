@@ -1,0 +1,124 @@
+@model FutureTech.StudentManagement.Web.ViewModels.StudentIndexViewModel
+
+@{
+    ViewData["Title"] = "Enrolled Students";
+}
+
+<section class="dashboard-shell">
+    <div class="dashboard-headline">
+        <div>
+            <p class="dashboard-kicker">Student Directory</p>
+            <h1>Enrolled Students</h1>
+            <p class="dashboard-subtitle">Search all enrolled records and manage student statuses in one place.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a class="btn btn-outline-light dashboard-cta" asp-action="Index">Back to Dashboard</a>
+            <a class="btn btn-success dashboard-cta" asp-action="Create">Add Student</a>
+        </div>
+    </div>
+
+    @if (TempData["Success"] is string successMessage && !string.IsNullOrWhiteSpace(successMessage))
+    {
+        <div class="alert alert-success dashboard-alert">@successMessage</div>
+    }
+
+    <section class="dashboard-panel">
+        <form method="get" class="dashboard-search row g-2">
+            <div class="col-lg-7">
+                <input type="text" name="query" value="@Model.SearchQuery" class="form-control" placeholder="Search by student name, surname, or ID" />
+            </div>
+            <div class="col-lg-2 col-md-4">
+                <button type="submit" class="btn btn-primary w-100">Search</button>
+            </div>
+            <div class="col-lg-2 col-md-4">
+                <a asp-action="EnrolledStudents" class="btn btn-outline-light w-100">Clear</a>
+            </div>
+        </form>
+
+        <div class="table-responsive mt-4">
+            <table class="table dashboard-table enrolled-table align-middle">
+                <thead>
+                    <tr>
+                        <th>Photo</th>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Mobile</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Students.Any())
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center py-5 dashboard-table-empty">No students found for this filter.</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var student in Model.Students)
+                        {
+                            var statusCss = student.EnrolmentStatus.Equals("Active", StringComparison.OrdinalIgnoreCase)
+                                ? "badge bg-success"
+                                : "badge bg-secondary";
+
+                            <tr>
+                                <td>
+                                    @if (!string.IsNullOrWhiteSpace(student.ProfileImageSasUrl))
+                                    {
+                                        <img src="@student.ProfileImageSasUrl" alt="Student image" class="student-avatar" />
+                                    }
+                                    else
+                                    {
+                                        <div class="student-avatar student-avatar-fallback">N/A</div>
+                                    }
+                                </td>
+                                <td class="text-break">@student.Id</td>
+                                <td>@student.FirstName @student.LastName</td>
+                                <td>@student.Email</td>
+                                <td>@student.MobileNumber</td>
+                                <td>
+                                    <span class="@statusCss">@student.EnrolmentStatus</span>
+                                    @if (student.IsSoftDeleted)
+                                    {
+                                        <span class="badge bg-warning text-dark ms-1">Soft Deleted</span>
+                                    }
+                                </td>
+                                <td class="d-flex flex-wrap gap-2">
+                                    <a asp-action="Edit" asp-route-id="@student.Id" class="btn btn-sm btn-outline-info">Edit</a>
+
+                                    <form asp-action="SoftDelete" method="post" onsubmit="return confirm('Mark this student as inactive?');">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@student.Id" />
+                                        <button type="submit" class="btn btn-sm btn-outline-warning">Soft Delete</button>
+                                    </form>
+
+                                    <form asp-action="PermanentDelete" method="post" onsubmit="return confirm('Permanently delete this student record?');">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@student.Id" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Permanent Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    @if (Model.TotalPages > 1)
+    {
+        <nav aria-label="Students pagination" class="mt-4">
+            <ul class="pagination dashboard-pagination">
+                @for (var currentPage = 1; currentPage <= Model.TotalPages; currentPage++)
+                {
+                    <li class="page-item @(currentPage == Model.PageNumber ? "active" : string.Empty)">
+                        <a class="page-link" asp-action="EnrolledStudents" asp-route-query="@Model.SearchQuery" asp-route-page="@currentPage">@currentPage</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+</section>

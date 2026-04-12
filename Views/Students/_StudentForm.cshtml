@@ -1,0 +1,76 @@
+@model FutureTech.StudentManagement.Web.ViewModels.StudentFormViewModel
+
+@{
+    var isEdit = !string.IsNullOrWhiteSpace(Model.Id);
+    var actionName = isEdit ? "Edit" : "Create";
+    var submitText = isEdit ? "Update Student" : "Save Student";
+}
+
+<form asp-action="@actionName" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+
+    @if (isEdit)
+    {
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="ExistingProfileImageBlobName" />
+    }
+
+    <div class="form-row-grid">
+
+        <div class="form-field">
+            <label asp-for="FirstName" class="form-field-label"></label>
+            <input asp-for="FirstName" class="form-field-input" placeholder="e.g. Lungisani" />
+            <span asp-validation-for="FirstName" class="form-field-error"></span>
+        </div>
+
+        <div class="form-field">
+            <label asp-for="LastName" class="form-field-label"></label>
+            <input asp-for="LastName" class="form-field-input" placeholder="e.g. Dlamini" />
+            <span asp-validation-for="LastName" class="form-field-error"></span>
+        </div>
+
+        <div class="form-field">
+            <label asp-for="Email" class="form-field-label"></label>
+            <input asp-for="Email" class="form-field-input" placeholder="student@institution.ac.za" />
+            <span asp-validation-for="Email" class="form-field-error"></span>
+        </div>
+
+        <div class="form-field">
+            <label asp-for="MobileNumber" class="form-field-label"></label>
+            <input asp-for="MobileNumber" class="form-field-input" placeholder="e.g. 066 666 6666" />
+            <span asp-validation-for="MobileNumber" class="form-field-error"></span>
+        </div>
+
+        <div class="form-field">
+            <label asp-for="EnrolmentStatus" class="form-field-label"></label>
+            <select asp-for="EnrolmentStatus" class="form-field-input form-field-select">
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+            </select>
+            <span asp-validation-for="EnrolmentStatus" class="form-field-error"></span>
+        </div>
+
+        <div class="form-field">
+            <label asp-for="ProfileImage" class="form-field-label">Profile Image <span class="form-field-hint">(JPEG / PNG)</span></label>
+            <input asp-for="ProfileImage" type="file" class="form-field-input form-field-file" accept="image/jpeg,image/png" />
+            <span asp-validation-for="ProfileImage" class="form-field-error"></span>
+        </div>
+
+    </div>
+
+    @if (isEdit && !string.IsNullOrWhiteSpace(Model.ExistingProfileImageSasUrl))
+    {
+        <div class="form-current-image">
+            <p class="form-field-label mb-2">Current Profile Image</p>
+            <img src="@Model.ExistingProfileImageSasUrl" alt="Current student profile image" class="form-preview-img" />
+        </div>
+    }
+
+    <div asp-validation-summary="ModelOnly" class="form-field-error mt-2"></div>
+
+    <div class="form-actions">
+        <button type="submit" class="btn btn-success form-btn-submit">@submitText</button>
+        <a asp-action="Index" class="btn btn-outline-light form-btn-cancel">Cancel</a>
+    </div>
+
+</form>

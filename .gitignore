@@ -1,0 +1,35 @@
+# Build outputs
+bin/
+obj/
+out/
+
+# User-specific files
+*.user
+*.rsuser
+*.suo
+
+# IDE/editor
+.vs/
+.vscode/
+
+# Logs
+*.log
+
+# Local app settings / secrets
+appsettings.Development.json
+secrets.json
+oauth_cookies.txt
+oauth_cookies2.txt
+oauth_login.html
+oauth_login2.html
+
+# Uploaded/generated files
+wwwroot/uploads/
+
+# Test/build artifacts
+TestResults/
+coverage/
+
+# OS files
+.DS_Store
+Thumbs.db

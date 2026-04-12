@@ -1,0 +1,21 @@
+@{
+    ViewData["Title"] = "Administrator Login";
+}
+
+<div class="login-shell">
+    <section class="login-card">
+        <h1>FutureTech Academy</h1>
+        <p>Sign in with an approved administrator account to manage students.</p>
+
+        @if (TempData["Error"] is string errorMessage && !string.IsNullOrWhiteSpace(errorMessage))
+        {
+            <div class="alert alert-danger">@errorMessage</div>
+        }
+
+        <form asp-action="LoginWithGoogle" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
+            <button type="submit" class="btn btn-primary w-100">Continue with Google</button>
+        </form>
+    </section>
+</div>

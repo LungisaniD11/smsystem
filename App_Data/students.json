@@ -1,0 +1,28 @@
+[
+  {
+    "id": "student-d6d6fe625c814ada9dc4faff0b3671a7",
+    "firstName": "Lisakhona",
+    "lastName": "Phiri",
+    "email": "lisakhonap@ftech.ac.za",
+    "mobileNumber": "066 666 6666",
+    "enrolmentStatus": "Active",
+    "profileImageUrl": "/uploads/student-d6d6fe625c814ada9dc4faff0b3671a7-fffdbb1ecb354ab98e035bd820d6fba4.jpg",
+    "profileImageBlobName": "student-d6d6fe625c814ada9dc4faff0b3671a7-fffdbb1ecb354ab98e035bd820d6fba4.jpg",
+    "isSoftDeleted": false,
+    "createdAtUtc": "2026-04-10T18:55:19.3171109+00:00",
+    "updatedAtUtc": "2026-04-10T18:55:19.317192+00:00"
+  },
+  {
+    "id": "student-645369cad84c421baddef1248a7d2587",
+    "firstName": "Snembane",
+    "lastName": "Station",
+    "email": "stationcommander@cms.gov.za",
+    "mobileNumber": "0814789760",
+    "enrolmentStatus": "Active",
+    "profileImageUrl": "/uploads/student-645369cad84c421baddef1248a7d2587-c497834ebaa14281a7424791dde04df1.png",
+    "profileImageBlobName": "student-645369cad84c421baddef1248a7d2587-c497834ebaa14281a7424791dde04df1.png",
+    "isSoftDeleted": false,
+    "createdAtUtc": "2026-04-11T12:38:56.1047637+00:00",
+    "updatedAtUtc": "2026-04-11T12:38:56.104764+00:00"
+  }
+]

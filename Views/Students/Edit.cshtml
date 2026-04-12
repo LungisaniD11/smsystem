@@ -1,0 +1,26 @@
+@model FutureTech.StudentManagement.Web.ViewModels.StudentFormViewModel
+
+@{
+    ViewData["Title"] = "Edit Student";
+}
+
+<section class="form-shell">
+    <div class="form-shell-inner">
+        <div class="form-card">
+            <div class="form-card-header">
+                <div>
+                    <p class="dashboard-kicker">Student Record</p>
+                    <h1 class="form-card-title">Edit Student Profile</h1>
+                    <p class="form-card-subtitle">Update the student's details below. Changes are saved immediately.</p>
+                </div>
+            </div>
+            <div class="form-card-body">
+                <partial name="_StudentForm" model="Model" />
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
