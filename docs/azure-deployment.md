@@ -21,6 +21,7 @@ Set configuration values under App Service -> Environment variables:
 - Authentication__Google__ClientSecret
 - Authentication__AdminAccess__AllowedEmails__0
 - Authentication__AdminAccess__AllowedEmails__1
+- ApplicationInsights__ConnectionString  *(copy from Application Insights resource → Connection String)*
 - Azure__Cosmos__Endpoint
 - Azure__Cosmos__Key
 - Azure__Cosmos__DatabaseName
