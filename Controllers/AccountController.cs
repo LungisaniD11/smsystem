@@ -9,8 +9,7 @@ public sealed class AccountController : Controller
     [HttpGet]
     public IActionResult Login(string? returnUrl = null)
     {
-        ViewData["ReturnUrl"] = returnUrl;
-        return View();
+        return RedirectToAction("Index", "Home", new { returnUrl });
     }
 
     [HttpPost]

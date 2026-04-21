@@ -46,7 +46,22 @@ public sealed class StudentsController : Controller
             PermanentlyDeletedCount = Volatile.Read(ref _permanentlyDeletedCount),
             WithImageCount = withImageCount,
             NewThisWeekCount = newThisWeekCount,
-            Students = []
+            Students = dashboardItems
+                .OrderByDescending(student => student.CreatedAtUtc)
+                .Take(12)
+                .Select(student => new StudentListItemViewModel
+                {
+                    Id = student.Id,
+                    FirstName = student.FirstName,
+                    LastName = student.LastName,
+                    Email = student.Email,
+                    MobileNumber = student.MobileNumber,
+                    EnrolmentStatus = student.EnrolmentStatus,
+                    IsSoftDeleted = student.IsSoftDeleted,
+                    ProfileImageSasUrl = _studentService.BuildSasUrl(student.ProfileImageBlobName),
+                    DateEnrolledUtc = student.CreatedAtUtc
+                })
+                .ToList()
         };
 
         return View(viewModel);
@@ -79,7 +94,8 @@ public sealed class StudentsController : Controller
                 MobileNumber = student.MobileNumber,
                 EnrolmentStatus = student.EnrolmentStatus,
                 IsSoftDeleted = student.IsSoftDeleted,
-                ProfileImageSasUrl = _studentService.BuildSasUrl(student.ProfileImageBlobName)
+                ProfileImageSasUrl = _studentService.BuildSasUrl(student.ProfileImageBlobName),
+                DateEnrolledUtc = student.CreatedAtUtc
             }).ToList()
         };
 

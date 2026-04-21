@@ -4,108 +4,112 @@
     ViewData["Title"] = "Enrolled Students";
 }
 
-<section class="dashboard-shell">
-    <div class="dashboard-headline">
+<section class="dashboard-shell enrolled-shell">
+    <div class="density-header-bar enrolled-header-bar">
         <div>
-            <p class="dashboard-kicker">Student Directory</p>
-            <h1>Enrolled Students</h1>
-            <p class="dashboard-subtitle">Search all enrolled records and manage student statuses in one place.</p>
+            <p class="density-brand-kicker">Student Directory</p>
+            <h1 class="density-brand-title">Enrolled Students</h1>
+            <p class="density-brand-subtitle">Browse detailed student cards and manage enrolment records with lifecycle actions.</p>
         </div>
-        <div class="d-flex gap-2">
-            <a class="btn btn-outline-light dashboard-cta" asp-action="Index">Back to Dashboard</a>
-            <a class="btn btn-success dashboard-cta" asp-action="Create">Add Student</a>
+        <div class="density-header-actions d-flex gap-2 flex-wrap">
+            <a class="btn density-outline-btn" asp-action="Index">Back to Dashboard</a>
+            <a class="btn density-primary-btn" asp-action="Create">Add Student</a>
         </div>
     </div>
 
     @if (TempData["Success"] is string successMessage && !string.IsNullOrWhiteSpace(successMessage))
     {
-        <div class="alert alert-success dashboard-alert">@successMessage</div>
+        <div class="alert density-alert-success">@successMessage</div>
     }
 
-    <section class="dashboard-panel">
-        <form method="get" class="dashboard-search row g-2">
-            <div class="col-lg-7">
-                <input type="text" name="query" value="@Model.SearchQuery" class="form-control" placeholder="Search by student name, surname, or ID" />
+    <section class="density-table-panel enrolled-density-panel">
+        <div class="density-table-header">
+            <div>
+                <h2>Student Cards</h2>
+                <p>Photo, contact details, enrolment status and record actions per student.</p>
             </div>
-            <div class="col-lg-2 col-md-4">
-                <button type="submit" class="btn btn-primary w-100">Search</button>
-            </div>
-            <div class="col-lg-2 col-md-4">
-                <a asp-action="EnrolledStudents" class="btn btn-outline-light w-100">Clear</a>
-            </div>
-        </form>
+            <form method="get" class="density-filter-form" role="search" aria-label="Search enrolled students">
+                <input type="text" name="query" value="@Model.SearchQuery" class="density-filter-input" placeholder="Search by student name, surname, or ID" aria-label="Search students" />
+                <button type="submit" class="btn density-primary-btn">Search</button>
+                <a asp-action="EnrolledStudents" class="btn density-outline-btn">Clear</a>
+            </form>
+        </div>
 
-        <div class="table-responsive mt-4">
-            <table class="table dashboard-table enrolled-table align-middle">
-                <thead>
-                    <tr>
-                        <th>Photo</th>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Mobile</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (!Model.Students.Any())
-                    {
-                        <tr>
-                            <td colspan="7" class="text-center py-5 dashboard-table-empty">No students found for this filter.</td>
-                        </tr>
-                    }
-                    else
-                    {
-                        foreach (var student in Model.Students)
-                        {
-                            var statusCss = student.EnrolmentStatus.Equals("Active", StringComparison.OrdinalIgnoreCase)
-                                ? "badge bg-success"
-                                : "badge bg-secondary";
+        @if (!Model.Students.Any())
+        {
+            <div class="density-empty-cell py-4 text-center">No students found for this filter.</div>
+        }
+        else
+        {
+            <div class="enrolled-cards-grid">
+                @foreach (var student in Model.Students)
+                {
+                    var fullName = string.Concat(student.FirstName, " ", student.LastName).Trim();
+                    var initials = string.Concat(
+                        student.FirstName.Length > 0 ? student.FirstName[0].ToString() : "",
+                        student.LastName.Length > 0 ? student.LastName[0].ToString() : ""
+                    ).ToUpperInvariant();
+                    var isActive = student.EnrolmentStatus.Equals("Active", StringComparison.OrdinalIgnoreCase) && !student.IsSoftDeleted;
+                    var statusText = isActive ? "Active" : "Inactive";
+                    var statusClass = isActive ? "density-status-badge status-active" : "density-status-badge status-inactive";
 
-                            <tr>
-                                <td>
-                                    @if (!string.IsNullOrWhiteSpace(student.ProfileImageSasUrl))
-                                    {
-                                        <img src="@student.ProfileImageSasUrl" alt="Student image" class="student-avatar" />
-                                    }
-                                    else
-                                    {
-                                        <div class="student-avatar student-avatar-fallback">N/A</div>
-                                    }
-                                </td>
-                                <td class="text-break">@student.Id</td>
-                                <td>@student.FirstName @student.LastName</td>
-                                <td>@student.Email</td>
-                                <td>@student.MobileNumber</td>
-                                <td>
-                                    <span class="@statusCss">@student.EnrolmentStatus</span>
+                    <article class="enrolled-card" aria-label="Student card for @fullName">
+                        <div class="enrolled-card-top">
+                            @if (!string.IsNullOrWhiteSpace(student.ProfileImageSasUrl))
+                            {
+                                <img src="@student.ProfileImageSasUrl" alt="@fullName profile photo" class="enrolled-card-avatar" />
+                            }
+                            else
+                            {
+                                <div class="enrolled-card-avatar-placeholder" aria-hidden="true">@initials</div>
+                            }
+                            <div class="enrolled-card-identity">
+                                <div class="enrolled-card-name">@fullName</div>
+                                <div class="enrolled-card-email">@student.Email</div>
+                                <div class="enrolled-card-id" title="@student.Id">@student.Id</div>
+                            </div>
+                        </div>
+
+                        <div class="enrolled-card-meta-row">
+                            <div class="enrolled-card-detail-item">
+                                <span class="enrolled-card-detail-label">Mobile</span>
+                                <span class="enrolled-card-detail-value">@student.MobileNumber</span>
+                            </div>
+                            <div class="enrolled-card-detail-item">
+                                <span class="enrolled-card-detail-label">Enrolled</span>
+                                <span class="enrolled-card-detail-value">@student.DateEnrolledUtc.ToLocalTime().ToString("yyyy-MM-dd")</span>
+                            </div>
+                            <div class="enrolled-card-detail-item">
+                                <span class="enrolled-card-detail-label">Status</span>
+                                <div class="mt-1">
+                                    <span class="@statusClass">@statusText</span>
                                     @if (student.IsSoftDeleted)
                                     {
-                                        <span class="badge bg-warning text-dark ms-1">Soft Deleted</span>
+                                        <span class="density-status-badge status-soft-deleted ms-1">Soft Deleted</span>
                                     }
-                                </td>
-                                <td class="d-flex flex-wrap gap-2">
-                                    <a asp-action="Edit" asp-route-id="@student.Id" class="btn btn-sm btn-outline-info">Edit</a>
+                                </div>
+                            </div>
+                        </div>
 
-                                    <form asp-action="SoftDelete" method="post" onsubmit="return confirm('Mark this student as inactive?');">
-                                        @Html.AntiForgeryToken()
-                                        <input type="hidden" name="id" value="@student.Id" />
-                                        <button type="submit" class="btn btn-sm btn-outline-warning">Soft Delete</button>
-                                    </form>
+                        <div class="enrolled-card-actions">
+                            <a asp-action="Edit" asp-route-id="@student.Id" class="btn btn-sm density-primary-btn enrolled-card-action-btn">Edit</a>
 
-                                    <form asp-action="PermanentDelete" method="post" onsubmit="return confirm('Permanently delete this student record?');">
-                                        @Html.AntiForgeryToken()
-                                        <input type="hidden" name="id" value="@student.Id" />
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">Permanent Delete</button>
-                                    </form>
-                                </td>
-                            </tr>
-                        }
-                    }
-                </tbody>
-            </table>
-        </div>
+                            <form asp-action="SoftDelete" method="post" onsubmit="return confirm('Mark this student as inactive?');" class="m-0">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@student.Id" />
+                                <button type="submit" class="btn btn-sm enrolled-soft-delete-btn enrolled-card-action-btn">Soft Delete</button>
+                            </form>
+
+                            <form asp-action="PermanentDelete" method="post" onsubmit="return confirm('Permanently delete this student record?');" class="m-0">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@student.Id" />
+                                <button type="submit" class="btn btn-sm enrolled-delete-btn enrolled-card-action-btn">Delete</button>
+                            </form>
+                        </div>
+                    </article>
+                }
+            </div>
+        }
     </section>
 
     @if (Model.TotalPages > 1)

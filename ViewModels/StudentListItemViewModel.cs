@@ -17,4 +17,6 @@ public sealed class StudentListItemViewModel
     public bool IsSoftDeleted { get; init; }
 
     public string ProfileImageSasUrl { get; init; } = string.Empty;
+
+    public DateTimeOffset DateEnrolledUtc { get; init; }
 }

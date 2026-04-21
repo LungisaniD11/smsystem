@@ -4,126 +4,113 @@
     ViewData["Title"] = "Student Management Dashboard";
 }
 
-<section class="dashboard-shell">
-    <div class="dashboard-headline">
-        <div>
-            <p class="dashboard-kicker">Student Intelligence Panel</p>
-            <h1>Student Management Dashboard</h1>
-            <p class="dashboard-subtitle">Live overview of enrolment health, account states, and data quality metrics.</p>
+<section class="dashboard-shell high-density-shell">
+    <div class="density-header-bar">
+        <div class="density-branding">
+            <img src="@Url.Content("~/images/FTechLogo.png")" alt="FutureTech Academy" class="density-brand-logo" />
+            <div>
+                <p class="density-brand-kicker">Student Intelligence Panel</p>
+                <h1 class="density-brand-title">Administrator Dashboard</h1>
+                <p class="density-brand-subtitle">High-density monitoring view for secure student lifecycle operations.</p>
+            </div>
         </div>
-        <a class="btn btn-success dashboard-cta" asp-action="Create">Add Student</a>
+        <a class="btn density-primary-btn" asp-action="Create">Add Student</a>
     </div>
 
     @if (TempData["Success"] is string successMessage && !string.IsNullOrWhiteSpace(successMessage))
     {
-        <div class="alert alert-success dashboard-alert">@successMessage</div>
+        <div class="alert density-alert-success">@successMessage</div>
     }
 
-    <div class="kpi-grid">
-        <article class="kpi-card">
-            <p class="kpi-label">Active Students</p>
-            <p class="kpi-value">@Model.ActiveCount</p>
-            <p class="kpi-meta">@Model.ActiveRate.ToString("0.0")% of current records</p>
+    <div class="density-kpi-grid">
+        <article class="density-kpi-card">
+            <p class="density-kpi-label">Active Students</p>
+            <p class="density-kpi-value">@Model.ActiveCount</p>
+            <p class="density-kpi-meta density-positive">@Model.ActiveRate.ToString("0.0")% active rate</p>
         </article>
-        <article class="kpi-card kpi-card-muted">
-            <p class="kpi-label">Marked Inactive</p>
-            <p class="kpi-value">@Model.InactiveCount</p>
-            <p class="kpi-meta">Soft + inactive statuses</p>
+        <article class="density-kpi-card">
+            <p class="density-kpi-label">Marked Inactive</p>
+            <p class="density-kpi-value">@Model.InactiveCount</p>
+            <p class="density-kpi-meta">Soft + inactive states</p>
         </article>
-        <article class="kpi-card">
-            <p class="kpi-label">Soft Deleted</p>
-            <p class="kpi-value">@Model.SoftDeletedCount</p>
-            <p class="kpi-meta">Recoverable student records</p>
+        <article class="density-kpi-card">
+            <p class="density-kpi-label">Soft Deleted</p>
+            <p class="density-kpi-value">@Model.SoftDeletedCount</p>
+            <p class="density-kpi-meta">Recoverable records</p>
         </article>
-        <article class="kpi-card kpi-card-danger">
-            <p class="kpi-label">Permanently Deleted</p>
-            <p class="kpi-value">@Model.PermanentlyDeletedCount</p>
-            <p class="kpi-meta">Counted since app started</p>
+        <article class="density-kpi-card">
+            <p class="density-kpi-label">Permanent Deletes</p>
+            <p class="density-kpi-value">@Model.PermanentlyDeletedCount</p>
+            <p class="density-kpi-meta">Since app start</p>
         </article>
-        <article class="kpi-card">
-            <p class="kpi-label">Profiles With Images</p>
-            <p class="kpi-value">@Model.WithImageCount</p>
-            <p class="kpi-meta">Visual identity completeness</p>
+        <article class="density-kpi-card">
+            <p class="density-kpi-label">Profiles With Images</p>
+            <p class="density-kpi-value">@Model.WithImageCount</p>
+            <p class="density-kpi-meta">Profile completeness</p>
         </article>
-        <article class="kpi-card kpi-card-accent">
-            <p class="kpi-label">New This Week</p>
-            <p class="kpi-value">@Model.NewThisWeekCount</p>
-            <p class="kpi-meta">Rolling 7-day intake</p>
+        <article class="density-kpi-card">
+            <p class="density-kpi-label">New This Week</p>
+            <p class="density-kpi-value">@Model.NewThisWeekCount</p>
+            <p class="density-kpi-meta density-positive">+7 day intake</p>
         </article>
     </div>
 
-    <section class="chart-panel">
-        <p class="chart-panel-title">Enrolment Overview</p>
-        <div class="chart-wrap">
-            <canvas id="kpiChart" height="110"></canvas>
+    <section class="density-table-panel">
+        <div class="density-table-header">
+            <div>
+                <h2>Student Records</h2>
+                <p>Compact operational view for student status, identity, and enrollment auditing.</p>
+            </div>
+            <form asp-action="EnrolledStudents" method="get" class="density-filter-form" role="search" aria-label="Filter student records">
+                <input type="text" name="query" class="density-filter-input" placeholder="Search by name, surname, or ID" />
+                <button type="submit" class="btn density-primary-btn">Search</button>
+            </form>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table density-data-table align-middle mb-0" aria-label="Student data grid">
+                <thead>
+                    <tr>
+                        <th>Student ID</th>
+                        <th>Full Name</th>
+                        <th>Email Address</th>
+                        <th>Enrollment Status</th>
+                        <th>Date Enrolled</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Students.Any())
+                    {
+                        <tr>
+                            <td colspan="5" class="density-empty-cell">No student records available.</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var student in Model.Students)
+                        {
+                            var fullName = string.Concat(student.FirstName, " ", student.LastName).Trim();
+                            var active = student.EnrolmentStatus.Equals("Active", StringComparison.OrdinalIgnoreCase) && !student.IsSoftDeleted;
+                            var badgeClass = active ? "density-status-badge status-active" : "density-status-badge status-inactive";
+                            var statusText = active ? "Active" : "Inactive";
+
+                            <tr>
+                                <td class="density-id-cell">@student.Id</td>
+                                <td class="density-name-cell">@fullName</td>
+                                <td>@student.Email</td>
+                                <td>
+                                    <span class="@badgeClass">@statusText</span>
+                                </td>
+                                <td>@student.DateEnrolledUtc.ToLocalTime().ToString("yyyy-MM-dd")</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="density-table-footer">
+            <a class="btn density-outline-btn" asp-action="EnrolledStudents">Open Enrolled Students</a>
         </div>
     </section>
-
-    <section class="dashboard-panel quick-actions-panel">
-        <h2 class="quick-actions-title">Student Records</h2>
-        <p class="quick-actions-subtitle">Open the dedicated Enrolled Students page for searching, pagination, and record actions.</p>
-        <a class="btn btn-outline-light" asp-action="EnrolledStudents">Open Enrolled Students</a>
-    </section>
 </section>
-
-@section Scripts {
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
-<script>
-(function () {
-    var ctx = document.getElementById('kpiChart');
-    if (!ctx) return;
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['Active', 'Inactive', 'Soft Deleted', 'Perm. Deleted', 'With Images', 'New This Week'],
-            datasets: [{
-                label: 'Students',
-                data: [@Model.ActiveCount, @Model.InactiveCount, @Model.SoftDeletedCount, @Model.PermanentlyDeletedCount, @Model.WithImageCount, @Model.NewThisWeekCount],
-                backgroundColor: [
-                    'rgba(32,191,121,0.75)',
-                    'rgba(147,171,198,0.65)',
-                    'rgba(234,179,8,0.7)',
-                    'rgba(220,38,38,0.7)',
-                    'rgba(111,228,213,0.7)',
-                    'rgba(59,130,246,0.75)'
-                ],
-                borderColor: [
-                    '#20bf79',
-                    '#93abc6',
-                    '#eab308',
-                    '#dc2626',
-                    '#6fe4d5',
-                    '#3b82f6'
-                ],
-                borderWidth: 1.5,
-                borderRadius: 6
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    backgroundColor: 'rgba(4,21,41,0.95)',
-                    titleColor: '#6fe4d5',
-                    bodyColor: '#d5e5f7',
-                    borderColor: 'rgba(111,228,213,0.3)',
-                    borderWidth: 1
-                }
-            },
-            scales: {
-                x: {
-                    ticks: { color: '#93abc6', font: { size: 12 } },
-                    grid: { color: 'rgba(111,228,213,0.07)' }
-                },
-                y: {
-                    beginAtZero: true,
-                    ticks: { color: '#93abc6', stepSize: 1, precision: 0 },
-                    grid: { color: 'rgba(111,228,213,0.07)' }
-                }
-            }
-        }
-    });
-}());
-</script>
-}

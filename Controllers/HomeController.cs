@@ -13,7 +13,7 @@ public class HomeController : Controller
             return RedirectToAction("Index", "Students");
         }
 
-        return RedirectToAction("Login", "Account");
+        return View();
     }
 
     public IActionResult Privacy()

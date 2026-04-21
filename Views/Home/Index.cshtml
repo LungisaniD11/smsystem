@@ -1,9 +1,626 @@
 ﻿@{
+    Layout = null;
     ViewData["Title"] = "FutureTech Academy";
+    var returnUrl = Context.Request.Query["returnUrl"].ToString();
 }
 
-<section class="mt-4">
-    <h1>FutureTech Student Management</h1>
-    <p>This system is restricted to authorized administrators.</p>
-    <a class="btn btn-primary" asp-controller="Account" asp-action="Login">Sign in with Google</a>
-</section>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Administrator Login</title>
+    <style>
+        :root {
+            --ft-dark-teal: #062f2f;
+            --ft-teal: #0f7b80;
+            --ft-teal-deep: #0b666a;
+            --ft-cyan: #3ecfcb;
+            --ft-cyan-soft: rgba(62, 207, 203, 0.16);
+            --ft-panel-text: #e7f8f7;
+            --ft-panel-muted: rgba(231, 248, 247, 0.82);
+            --ft-border: #d9e4e6;
+            --ft-surface: #ffffff;
+            --ft-surface-alt: #f4f8f8;
+            --ft-shadow: 0 28px 60px rgba(4, 30, 31, 0.12);
+            --ft-shadow-soft: 0 18px 40px rgba(4, 30, 31, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            min-height: 100%;
+            font-family: "Segoe UI", "Poppins", Tahoma, Geneva, Verdana, sans-serif;
+            background: #dfe9ea;
+            color: #163236;
+        }
+
+        body {
+            overflow-x: hidden;
+        }
+
+        .landing-shell {
+            min-height: 100vh;
+            display: flex;
+            background:
+                radial-gradient(circle at top left, rgba(62, 207, 203, 0.12), transparent 24%),
+                linear-gradient(135deg, #edf4f4 0%, #dfe8e8 100%);
+        }
+
+        .landing-panel {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .landing-panel-left {
+            flex: 0 0 40%;
+            max-width: 40%;
+            padding: 3.25rem 3rem 3rem;
+            background:
+                radial-gradient(circle at 18% 14%, rgba(0, 220, 195, 0.15), transparent 24%),
+                linear-gradient(180deg, #08383a 0%, var(--ft-dark-teal) 100%);
+            color: var(--ft-panel-text);
+            overflow: hidden;
+        }
+
+        .landing-panel-right {
+            flex: 0 0 60%;
+            max-width: 60%;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.78);
+            backdrop-filter: blur(10px);
+        }
+
+        .left-content,
+        .login-card {
+            opacity: 0;
+            transform: translateY(22px);
+            animation: fadeUp 0.8s ease-out forwards;
+        }
+
+        .left-content {
+            position: relative;
+            z-index: 2;
+            max-width: 34rem;
+        }
+
+        .brand-mark {
+            width: min(100%, 24rem);
+            height: auto;
+            margin-bottom: 2.1rem;
+            object-fit: contain;
+            filter: drop-shadow(0 16px 30px rgba(0, 0, 0, 0.22));
+        }
+
+        .welcome-title {
+            margin: 0 0 1rem;
+            font-size: clamp(2rem, 3vw, 2.85rem);
+            line-height: 1.08;
+            letter-spacing: -0.03em;
+        }
+
+        .welcome-title span {
+            color: #32ef9d;
+        }
+
+        .welcome-copy {
+            margin: 0;
+            max-width: 32rem;
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: var(--ft-panel-muted);
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 2rem 0 0;
+            display: grid;
+            gap: 1rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 0.95rem;
+            font-size: 1.05rem;
+            color: #f1fffd;
+        }
+
+        .feature-icon {
+            width: 2.85rem;
+            height: 2.85rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 999px;
+            background: rgba(50, 239, 157, 0.13);
+            border: 1px solid rgba(118, 252, 206, 0.18);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+        }
+
+        .feature-icon svg {
+            width: 1.25rem;
+            height: 1.25rem;
+            fill: #73f7bb;
+        }
+
+        .panel-footer {
+            margin-top: 2.5rem;
+            font-size: 0.94rem;
+            color: rgba(231, 248, 247, 0.74);
+        }
+
+        .left-decor {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: min(100%, 42rem);
+            height: 13rem;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .login-wrap {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-card {
+            width: min(100%, 35rem);
+            padding: 2.8rem 2.6rem;
+            background: var(--ft-surface);
+            border-radius: 1.6rem;
+            box-shadow: var(--ft-shadow);
+            animation-delay: 0.14s;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-title {
+            margin: 0;
+            color: #1a2f35;
+            font-size: clamp(2rem, 3vw, 2.35rem);
+            letter-spacing: -0.03em;
+        }
+
+        .login-accent {
+            width: 8.5rem;
+            height: 0.2rem;
+            margin: 1rem auto 1.15rem;
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--ft-teal), var(--ft-cyan));
+        }
+
+        .login-subtitle {
+            margin: 0;
+            color: #586c72;
+            font-size: 1.04rem;
+            line-height: 1.6;
+        }
+
+        .login-alert {
+            margin-bottom: 1.15rem;
+            padding: 0.9rem 1rem;
+            border-radius: 0.95rem;
+            background: #fff3f2;
+            border: 1px solid #f2c5c1;
+            color: #97342d;
+            font-size: 0.95rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.15rem;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 0.55rem;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #26393d;
+        }
+
+        .input-shell {
+            position: relative;
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--ft-border);
+            border-radius: 0.9rem;
+            background: var(--ft-surface);
+            box-shadow: 0 10px 18px rgba(12, 44, 53, 0.04);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+        }
+
+        .input-shell:focus-within {
+            border-color: var(--ft-teal);
+            box-shadow: 0 0 0 4px rgba(15, 123, 128, 0.12);
+            transform: translateY(-1px);
+        }
+
+        .input-icon,
+        .password-toggle {
+            width: 3rem;
+            height: 3.3rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #6e8288;
+            flex-shrink: 0;
+            background: transparent;
+            border: 0;
+            padding: 0;
+        }
+
+        .input-icon svg,
+        .password-toggle svg {
+            width: 1.2rem;
+            height: 1.2rem;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 1.9;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .text-input {
+            width: 100%;
+            border: 0;
+            outline: 0;
+            padding: 1rem 0.2rem 1rem 0;
+            font-size: 1rem;
+            color: #21363a;
+            background: transparent;
+        }
+
+        .text-input::placeholder {
+            color: #8d9ea3;
+        }
+
+        .password-toggle {
+            cursor: pointer;
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+
+        .password-toggle:hover {
+            color: var(--ft-teal);
+            transform: scale(1.04);
+        }
+
+        .password-toggle:focus-visible,
+        .primary-button:focus-visible,
+        .secondary-button:focus-visible,
+        .forgot-link:focus-visible {
+            outline: 3px solid rgba(15, 123, 128, 0.22);
+            outline-offset: 2px;
+        }
+
+        .forgot-row {
+            display: flex;
+            justify-content: flex-end;
+            margin: -0.15rem 0 1.4rem;
+        }
+
+        .forgot-link,
+        .support-link {
+            color: #1e87d7;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .forgot-link:hover,
+        .support-link:hover {
+            color: #0d6bb3;
+        }
+
+        .primary-button,
+        .secondary-button {
+            width: 100%;
+            border: 0;
+            border-radius: 0.95rem;
+            padding: 1rem 1.2rem;
+            font-size: 1.05rem;
+            font-weight: 700;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .primary-button {
+            background: linear-gradient(135deg, var(--ft-teal) 0%, var(--ft-teal-deep) 100%);
+            color: #ffffff;
+            box-shadow: 0 16px 28px rgba(15, 123, 128, 0.24);
+        }
+
+        .primary-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 30px rgba(15, 123, 128, 0.3);
+        }
+
+        .secondary-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            background: var(--ft-surface);
+            color: #30484d;
+            border: 1px solid var(--ft-border);
+            box-shadow: var(--ft-shadow-soft);
+        }
+
+        .secondary-button:hover {
+            transform: translateY(-2px);
+            border-color: #b9ced1;
+            box-shadow: 0 18px 28px rgba(13, 45, 50, 0.12);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            color: #73858b;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: "";
+            height: 1px;
+            flex: 1;
+            background: linear-gradient(90deg, rgba(205, 216, 218, 0.2), rgba(205, 216, 218, 1), rgba(205, 216, 218, 0.2));
+        }
+
+        .google-mark {
+            width: 1.35rem;
+            height: 1.35rem;
+        }
+
+        .support-copy {
+            margin: 1.8rem 0 0;
+            text-align: center;
+            color: #6a7a7f;
+            font-size: 0.98rem;
+        }
+
+        .micro-copy {
+            margin: 0 0 1.2rem;
+            color: #7c8f95;
+            font-size: 0.9rem;
+            line-height: 1.55;
+        }
+
+        @@keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(22px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @@media (max-width: 991.98px) {
+            .landing-shell {
+                flex-direction: column;
+            }
+
+            .landing-panel-left,
+            .landing-panel-right {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+
+            .landing-panel-left {
+                min-height: 42vh;
+                padding: 2.4rem 1.5rem 7rem;
+            }
+
+            .landing-panel-right {
+                padding: 1.25rem 1rem 2rem;
+            }
+
+            .login-card {
+                width: min(100%, 40rem);
+                padding: 2.1rem 1.4rem;
+            }
+        }
+
+        @@media (max-width: 575.98px) {
+            .welcome-title {
+                font-size: 1.85rem;
+            }
+
+            .welcome-copy,
+            .feature-item,
+            .login-subtitle,
+            .support-copy {
+                font-size: 0.97rem;
+            }
+
+            .brand-mark {
+                width: min(100%, 18rem);
+            }
+
+            .left-decor {
+                width: 100%;
+                height: 10rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="landing-shell">
+        <section class="landing-panel landing-panel-left">
+            <div class="left-content">
+                <img src="@Url.Content("~/images/FTechLogo.png")" alt="FutureTech Academy" class="brand-mark" />
+
+                <h1 class="welcome-title">Welcome to <span>FutureTech Academy</span></h1>
+
+                <p class="welcome-copy">
+                    FutureTech Academy, a leading institution in digital education, is expanding its student base and requires a secure, cloud-based student management system. The system should be efficient, scalable, and accessible only to authorised administrators.
+                </p>
+
+                <ul class="feature-list" aria-label="Platform highlights">
+                    <li class="feature-item">
+                        <span class="feature-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12 3l7 3v5c0 4.4-2.9 8.4-7 9.6C7.9 19.4 5 15.4 5 11V6l7-3z"></path>
+                                <path d="M9.4 12.3l1.8 1.8 3.7-4"></path>
+                            </svg>
+                        </span>
+                        <span>Secure &amp; Role-Based Access</span>
+                    </li>
+                    <li class="feature-item">
+                        <span class="feature-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M7 18a4 4 0 1 1 .8-7.9A5.5 5.5 0 0 1 18 12a3.5 3.5 0 0 1-.5 7H7z"></path>
+                                <path d="M12 10v7"></path>
+                                <path d="M9.5 14.5L12 17l2.5-2.5"></path>
+                            </svg>
+                        </span>
+                        <span>Cloud-Based &amp; Scalable</span>
+                    </li>
+                    <li class="feature-item">
+                        <span class="feature-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M5 19V9"></path>
+                                <path d="M12 19V5"></path>
+                                <path d="M19 19v-7"></path>
+                                <path d="M3 19h18"></path>
+                            </svg>
+                        </span>
+                        <span>Efficient Student Management</span>
+                    </li>
+                    <li class="feature-item">
+                        <span class="feature-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M7 11V8a5 5 0 0 1 10 0v3"></path>
+                                <rect x="5" y="11" width="14" height="10" rx="2"></rect>
+                                <path d="M12 15.5v1.5"></path>
+                            </svg>
+                        </span>
+                        <span>Accessible Only to Authorised Administrators</span>
+                    </li>
+                </ul>
+
+                <p class="panel-footer">&copy; 2026 FutureTech Academy. All rights reserved.</p>
+            </div>
+
+            <svg class="left-decor" viewBox="0 0 500 150" preserveAspectRatio="none" aria-hidden="true">
+                <path d="M0,102 C110,44 208,160 320,112 S452,60 500,94" stroke="rgba(62, 207, 203, 0.18)" fill="transparent" stroke-width="2"></path>
+                <path d="M0,116 C136,70 212,162 328,120 S444,74 500,108" stroke="rgba(79, 228, 220, 0.16)" fill="transparent" stroke-width="1.6"></path>
+                <path d="M0,129 C150,86 248,170 350,132 S446,92 500,122" stroke="rgba(83, 220, 228, 0.12)" fill="transparent" stroke-width="1.2"></path>
+                <path d="M0,142 C156,110 258,166 372,142 S456,112 500,137" stroke="rgba(108, 234, 237, 0.1)" fill="transparent" stroke-width="1"></path>
+            </svg>
+        </section>
+
+        <section class="landing-panel landing-panel-right">
+            <div class="login-wrap">
+                <div class="login-card">
+                    <header class="login-header">
+                        <h2 class="login-title">Administrator Login</h2>
+                        <div class="login-accent"></div>
+                        <p class="login-subtitle">Sign in to access the FutureTech Academy Student Management System</p>
+                    </header>
+
+                    @if (TempData["Error"] is string errorMessage && !string.IsNullOrWhiteSpace(errorMessage))
+                    {
+                        <div class="login-alert" role="alert">@errorMessage</div>
+                    }
+
+                    <form asp-controller="Account" asp-action="LoginWithGoogle" method="post">
+                        <input type="hidden" name="returnUrl" value="@returnUrl" />
+
+                        <div class="input-group">
+                            <label class="input-label" for="email">Email Address</label>
+                            <div class="input-shell">
+                                <span class="input-icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M4 6h16v12H4z"></path>
+                                        <path d="M4 8l8 6 8-6"></path>
+                                    </svg>
+                                </span>
+                                <input id="email" name="email" type="email" class="text-input" placeholder="admin@futuretechacademy.edu" autocomplete="username" />
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label" for="password">Password</label>
+                            <div class="input-shell">
+                                <span class="input-icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24">
+                                        <rect x="5" y="11" width="14" height="9" rx="2"></rect>
+                                        <path d="M8 11V8a4 4 0 0 1 8 0v3"></path>
+                                    </svg>
+                                </span>
+                                <input id="password" name="password" type="password" class="text-input" placeholder="Enter your password" autocomplete="current-password" />
+                                <button type="button" class="password-toggle" data-password-toggle aria-label="Show password">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="forgot-row">
+                            <a href="mailto:support@futuretechacademy.edu" class="forgot-link">Forgot Password?</a>
+                        </div>
+
+                        <p class="micro-copy">Administrator access is verified with an approved Google account.</p>
+
+                        <button type="submit" class="primary-button">Sign In</button>
+                    </form>
+
+                    <div class="divider" aria-hidden="true">OR</div>
+
+                    <form asp-controller="Account" asp-action="LoginWithGoogle" method="post">
+                        <input type="hidden" name="returnUrl" value="@returnUrl" />
+                        <button type="submit" class="secondary-button">
+                            <svg class="google-mark" viewBox="0 0 24 24" aria-hidden="true">
+                                <path fill="#EA4335" d="M12 10.2v3.9h5.4c-.2 1.3-1.5 3.9-5.4 3.9-3.2 0-5.9-2.7-5.9-6s2.7-6 5.9-6c1.8 0 3 .8 3.7 1.4l2.5-2.4C16.6 3.5 14.5 2.7 12 2.7 6.9 2.7 2.8 6.8 2.8 12S6.9 21.3 12 21.3c6.1 0 9.1-4.3 9.1-6.5 0-.4 0-.8-.1-1.1H12z"></path>
+                                <path fill="#34A853" d="M3.9 7l3.2 2.3C8 7.5 9.8 6 12 6c1.8 0 3 .8 3.7 1.4l2.5-2.4C16.6 3.5 14.5 2.7 12 2.7 8.5 2.7 5.4 4.7 3.9 7z"></path>
+                                <path fill="#FBBC05" d="M12 21.3c2.4 0 4.5-.8 6-2.2l-2.8-2.3c-.8.6-1.8 1-3.2 1-3.8 0-5.1-2.5-5.4-3.8l-3.2 2.4c1.5 2.9 4.5 4.9 8.6 4.9z"></path>
+                                <path fill="#4285F4" d="M21.1 13.7c.1-.3.1-.7.1-1.1s0-.8-.1-1.1H12v3.9h5.4c-.3 1.3-1.1 2.3-2.2 3.1l2.8 2.3c1.6-1.5 3.1-4.2 3.1-7.1z"></path>
+                            </svg>
+                            <span>Continue with Google</span>
+                        </button>
+                    </form>
+
+                    <p class="support-copy">Need help? Contact <a href="mailto:support@futuretechacademy.edu" class="support-link">support@futuretechacademy.edu</a></p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        (function () {
+            var toggle = document.querySelector('[data-password-toggle]');
+            var passwordInput = document.getElementById('password');
+
+            if (!toggle || !passwordInput) {
+                return;
+            }
+
+            toggle.addEventListener('click', function () {
+                var isPassword = passwordInput.getAttribute('type') === 'password';
+                passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+                toggle.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+            });
+        }());
+    </script>
+</body>
+</html>
