@@ -12,7 +12,14 @@ public sealed class CosmosStudentRepository : IStudentRepository
     public CosmosStudentRepository(IOptions<CosmosOptions> options)
     {
         var config = options.Value;
-        var client = new CosmosClient(config.Endpoint, config.Key);
+        var clientOptions = new CosmosClientOptions
+        {
+            SerializerOptions = new CosmosSerializationOptions
+            {
+                PropertyNamingPolicy = CosmosPropertyNamingPolicy.CamelCase
+            }
+        };
+        var client = new CosmosClient(config.Endpoint, config.Key, clientOptions);
         var database = client.CreateDatabaseIfNotExistsAsync(config.DatabaseName).GetAwaiter().GetResult();
         _container = database.Database.CreateContainerIfNotExistsAsync(config.ContainerName, "/id").GetAwaiter().GetResult().Container;
     }
