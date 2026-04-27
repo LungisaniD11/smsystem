@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/FutureTech.StudentManagement.Web.styles.css" asp-append-version="true" />
 </head>
-<body>
+<body class="app-page">
     <header>
         <nav class="navbar navbar-expand-lg app-navbar mb-3">
             <div class="container-fluid">
@@ -61,12 +61,12 @@
         </nav>
     </header>
     <div class="container-fluid app-shell px-3 px-md-4 px-xl-5">
-        <main role="main" class="pb-3">
+        <main role="main" class="app-main">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="footer border-0">
+    <footer class="footer border-0 app-footer">
         <div class="container-fluid px-3 px-md-4 px-xl-5">
             &copy; 2026 - FutureTech Academy Student Management System
         </div>

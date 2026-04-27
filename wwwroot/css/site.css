@@ -34,9 +34,20 @@ body {
   margin: 0;
 }
 
+.app-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
 .app-shell {
+  flex: 1 0 auto;
   width: 100%;
   max-width: none;
+}
+
+.app-main {
+  padding-bottom: 1.5rem;
 }
 
 .app-navbar {
@@ -89,6 +100,10 @@ body {
   color: #64748b;
   border-top: 1px solid var(--ft-border);
   background: var(--ft-surface);
+}
+
+.app-footer {
+  flex-shrink: 0;
 }
 
 .dashboard-shell {
@@ -544,6 +559,7 @@ body {
   gap: 0.65rem;
   margin-top: 1rem;
   padding-top: 0.9rem;
+  padding-bottom: 0.2rem;
   border-top: 1px solid var(--ft-border);
 }
 
