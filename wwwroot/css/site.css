@@ -47,7 +47,7 @@ body {
 }
 
 .app-main {
-  padding-bottom: 1.5rem;
+  padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
 }
 
 .app-navbar {
@@ -104,6 +104,7 @@ body {
 
 .app-footer {
   flex-shrink: 0;
+  padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
 }
 
 .dashboard-shell {
@@ -559,7 +560,7 @@ body {
   gap: 0.65rem;
   margin-top: 1rem;
   padding-top: 0.9rem;
-  padding-bottom: 0.2rem;
+  padding-bottom: calc(0.2rem + env(safe-area-inset-bottom));
   border-top: 1px solid var(--ft-border);
 }
 
