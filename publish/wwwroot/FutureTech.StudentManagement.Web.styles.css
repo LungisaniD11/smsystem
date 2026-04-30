@@ -41,9 +41,8 @@ button.accept-policy[b-e9dayij6gs] {
 }
 
 .footer[b-e9dayij6gs] {
-  position: absolute;
-  bottom: 0;
+  position: static;
   width: 100%;
-  white-space: nowrap;
-  line-height: 60px;
+  white-space: normal;
+  line-height: normal;
 }
